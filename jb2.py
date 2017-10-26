@@ -20,31 +20,31 @@ class App():
         self.master.grid(column=0, row=0, sticky=(N, W, E, S))  #all dirs to center
         self.master.columnconfigure(0, weight=1)
         self.master.rowconfigure(0, weight=1)
-        
+
         # Simple status flag
         # False mean the self.timer is not running
         # True means the self.timer is running (counting)
-        self.state = False 
-        
+        self.state = False
+
         # Our time structure [min, sec, centsec]
         self.timer = [0, 0, 0]
-        # The format is padding all the 
+        # The format is padding all the
         self.pattern = '{0:02d}:{1:02d}:{2:02d}'
-        
+
         self.judge = StringVar()
         self.ytLink = StringVar()
-        self.scorePos = IntVar(0) 
+        self.scorePos = IntVar(0)
         self.scoreNeg = IntVar(0)
         self.scoreTitle = ["Time", "Click"]
         self.score = [['00:00:00', 0]]
-        
+
         self.judgeEntry = ttk.Entry(self.master, width=7, textvariable=self.ytLink)
         self.ytLink.set("yt link")
         self.judgeEntry.grid(column=3, row=1, sticky=(W, E))
         self.ytEntry = ttk.Entry(self.master, width=7, textvariable=self.judge)
         self.judge.set("Judge")
         self.ytEntry.grid(column=2, row=1, sticky=(W, E))
-        
+
         self.timeText = ttk.Label(self.master, text="00:00:00")
         self.timeText.grid(column=1, row=1, sticky=(W, N))
         self.startButton = ttk.Button(self.master, text='Start', command=self.start)
@@ -53,18 +53,18 @@ class App():
         self.pauseButton.grid(column=3, row=4)
         self.resetButton = ttk.Button(self.master, text='Reset', command=self.reset)
         self.resetButton.grid(column=4, row=4)
-        
+
         ttk.Label(self.master, textvariable=self.scoreNeg).grid(column=1, row=3, sticky=(W, E))
         ttk.Label(self.master, textvariable=self.scorePos).grid(column=2, row=3, sticky=(W, E))
         ttk.Button(self.master, text="+", command=self.clickerPos).grid(column=2, row=2, sticky=W)
         ttk.Button(self.master, text="-", command=self.clickerNeg).grid(column=1, row=2, sticky=W)
-        
+
         ttk.Button(self.master, text='Save Score', command=self.file_save).grid(column=4, row=2, sticky=W)
-       
+
         ttk.Label(self.master, text="score").grid(column=3, row=2, sticky=W)
-        
+
         for child in self.master.winfo_children(): child.grid_configure(padx=5, pady=5)
-        
+
         self.judgeEntry.focus()
         self.ytEntry.focus()
 
@@ -77,39 +77,39 @@ class App():
         master.bind("y", self.start) #bind return to clicker proc
         master.bind('<Return>', self.start) #bind return to clicker proc
         self.update_timeText()
-        
+
     #clicker methods
     def metadata(self):
         try:
             value = float(self.metadata.get())
         except ValueError:
             pass
-    
+
     def clickerPos(self, event=None):
         try:
             self.scorePos.set(self.scorePos.get() + 1)
             Tk.update_idletasks(root)
-    
+
             self.score.append([self.timeString, 1])
         except ValueError:
             pass
-    
+
     def clickerNeg(self, event=None):
         try:
             self.scoreNeg.set(self.scoreNeg.get() + 1)
             Tk.update_idletasks(root)
-    
+
             self.score.append([self.timeString, -1])
         except ValueError:
             pass
-    
+
     #self.timer methods
     def update_timeText(self):
         if (self.state):
-            # Every time this function is called, 
+            # Every time this function is called,
             # we will increment 1 centisecond (1/100 of a second)
             self.timer[2] += 1
-            
+
             # Every 100 centisecond is equal to 1 second
             #if (self.timer[2] >= 100):
             if (self.timer[2] >= 60): #changing to 60 due to timer calibration
@@ -126,18 +126,18 @@ class App():
             # Call the update_timeText() function after 1 centisecond
         root.after(10, self.update_timeText)
         Tk.update_idletasks(root)
-    
+
     # To reset the self.timer to 00:00:00
     def reset(self, event=None):
         self.timer = [0, 0, 0]
         self.timeText.configure(text='00:00:00')
-    
+
         self.scorePos.set(0)
         self.scoreNeg.set(0)
         self.score = [['00:00:00', 0]]
         self.pause()
         Tk.update_idletasks(root)
-    
+
     # To start the self.timer
     def start(self, event=None):
         self.state = True
@@ -152,7 +152,7 @@ class App():
         f = filedialog.asksaveasfile(mode='w', defaultextension=".txt")
         if f is None: # asksaveasfile return `None` if dialog closed with "cancel".
             return
-
+        totalclick = 0
         f.write(str(self.judge) + '\n'  + str(self.ytLink) + '\n' )
         f.write( 'Time\tClick\n' )
         for row in self.score:
@@ -160,69 +160,10 @@ class App():
             f.write( '\t' )
             f.write( str(row[1]) )
             f.write( '\n' )
-        f.close() 
+            totalclick += row[1]
+        f.write('Total Score:\t' + str(totalclick))
+        f.close()
 
 root = Tk()
 app=App(root)
 root.mainloop()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
